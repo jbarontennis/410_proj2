@@ -22,7 +22,7 @@ bool Scheduler::time_to_switch_processes(int tik_count, PCB &p) {
 		return true;
 	}
 	if (preemptive) {
-		if (tik_count >= time_slice) {
+		if (tik_count - p.arrival_time >= time_slice) {
 			return true;
 		}
 	}
