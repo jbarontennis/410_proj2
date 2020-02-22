@@ -5,7 +5,7 @@
  *      Author: keith
  */
 #include "../includes/scheduler.h"
-
+bool flag = false;
 bool Scheduler::isEmpty() {
 	return ready_q->empty();
 
@@ -14,18 +14,26 @@ void Scheduler::add(PCB p) {
 	ready_q->push(p);
 }
 PCB Scheduler::getNext() {
-	ready_q->pop();
-	return ready_q->front();
+	PCB rt;
+	rt = ready_q->front();
+	if(!ready_q->empty()){
+		ready_q->pop();
+	}
+	return rt;
 }
 bool Scheduler::time_to_switch_processes(int tik_count, PCB &p) {
-	if (p.remaining_cpu_time == 0) {
+
+
+	if (preemptive) {
+			if ((p.required_cpu_time - p.remaining_cpu_time) %time_slice ==0) {
+				return true;
+			}
+		}
+	if (p.remaining_cpu_time <= 0) {
 		return true;
 	}
-	if (preemptive) {
-		if (tik_count - p.arrival_time >= time_slice) {
-			return true;
-		}
-	}
+
+
 
 	return false;
 

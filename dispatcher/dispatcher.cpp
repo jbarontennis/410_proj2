@@ -22,7 +22,7 @@ void Dispatcher::put_on_CPU(PCB &process){
 }
 bool Dispatcher::isValidJobOnCPU(){
 	PCB tmp = cpu->get_COPY_of_Current_Process();
-	if(tmp.isEmpty()){
+	if(tmp.isEmpty()||tmp.process_number<=0){
 		is_valid_job_on_cpu = false;
 		return false;
 	}
