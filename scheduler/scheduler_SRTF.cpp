@@ -9,45 +9,58 @@
  */
 
 #include "../includes/scheduler_SRTF.h"
+
 #include <vector>
-#include <algorithm>
 bool Scheduler_SRTF::time_to_switch_processes(int tick_count, PCB &p) {
 	preemptive = true;
 	sort();
-	return Scheduler::time_to_switch_processes(tick_count, p);
+	if (p.remaining_cpu_time <= 0) {
+			return true;
+		}
+	if(!ready_q->empty()){
+	if(ready_q->front().remaining_cpu_time < p.remaining_cpu_time){
+		return true;
+	}
+	}
+
+	return false;
+
 }
 
 void Scheduler_SRTF::sort() {
+
 	preemptive = true;
 	std::vector<PCB> tmp;
 	std::vector<PCB> tmp2;
-	for (unsigned int i = 0; i < ready_q->size(); i++) {
+	int size = ready_q->size();
+	for (int i = 0; i < size; i++) {
 		tmp.push_back(ready_q->front());
 		ready_q->pop();
 	}
-	int size = tmp.size();
-	int countArray[size];
-	for (int i = 0; i < size; i++) {
-		tmp2.push_back(tmp[i]);
-		countArray[i] = 0;
+	int i, j;
+	   bool swapped;
+	   for (i = 0; i < size-1; i++)
+	   {
+	     swapped = false;
+	     for (j = 0; j < size-i-1; j++)
+	     {
+	        if (tmp[j].remaining_cpu_time > tmp[j+1].remaining_cpu_time)
+	        {
+	           PCB tmp2 = tmp[j];
+	           tmp[j] = tmp[j+1];
+	           tmp[j+1] = tmp2;
+	           swapped = true;
+	        }
+	     }
+	     if (swapped == false)
+	        break;
+	   }
+	   for(int i = 0;i < size;i++){
+	   			ready_q->push(tmp[i]);
+	   		}
 	}
-	for (int i = 0; i < size - 1; i++) {
-		for (int j = i + 1; j < size; j++) {
-			if (tmp[i].remaining_cpu_time > tmp[j].remaining_cpu_time) {
-				countArray[i]++;
-			} else {
-				countArray[j]++;
-			}
-		}
-		for (int i = 0; i < size; i++) {
-			tmp2[countArray[i]] = tmp[i];
-		}
-		for(int i = 0;i < size;i++){
-			ready_q->push(tmp2[i]);
-		}
-	}
-}
-void add(PCB p) {
 
-}
+
+
+
 
